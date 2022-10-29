@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using WebApi.DTO;
+using WebApi.Entities;
 
 namespace WebApi.Controllers
 {
@@ -12,54 +14,62 @@ namespace WebApi.Controllers
             _context = cotext;
         }
         [HttpGet]
-        public async Task<ActionResult<List<Products>>> Get()
+        public async Task<ActionResult<List<Product>>> Get()
         {
 
-            return Ok(await _context.Products.ToListAsync());
+            return Ok(await _context.Product.ToListAsync());
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Products>> Get(int id)
+        public async Task<ActionResult<Product>> Get(int id)
         {
-            var dbproduct = await _context.Products.FindAsync(id);
+            var dbproduct = await _context.Product.FindAsync(id);
             if(dbproduct == null) { return BadRequest("Not Fount"); }
 
             return Ok(dbproduct);
         }
 
         [HttpPost]
-        public async Task<ActionResult<List<Products>>> AddProduct(Products product)
+        public async Task<ActionResult<List<Product>>> AddProduct(ProductDTO request)
         {
-            _context.Products.Add(product);
+            var product = new Product
+            {
+                Id = request.Id,
+                Name = request.Name,
+                Qnty = request.Qnty,
+                Price = request.Price,
+            };
+            _context.Product.Add(product);
             await _context.SaveChangesAsync();
-            return Ok(await _context.Products.ToListAsync());
+            return Ok(await _context.Product.ToListAsync());
         }
 
         [HttpPut]
-        public async Task<ActionResult<List<Products>>> UpdateProduct(Products request)
+        public async Task<ActionResult<List<Product>>> UpdateProduct(ProductDTO request)
         {
-            var dbproduct = await _context.Products.FindAsync(request.Id);
+            var dbproduct = await _context.Product.FindAsync(request.Id);
             if (dbproduct == null) { return BadRequest("Not Fount"); }
 
 
             dbproduct.Name = request.Name;
             dbproduct.Qnty = request.Qnty;
+            dbproduct.Price = request.Price;
 
             await _context.SaveChangesAsync();
-            return Ok(await _context.Products.ToListAsync());
+            return Ok(await _context.Product.ToListAsync());
         }
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Products>> Delete(int id)
+        public async Task<ActionResult<Product>> Delete(int id)
         {
-            var dbproduct = await _context.Products.FindAsync(id);
+            var dbproduct = await _context.Product.FindAsync(id);
             if (dbproduct == null) {
                 return BadRequest("Not Fount"); 
             }
 
-            _context.Products.Remove(dbproduct);
+            _context.Product.Remove(dbproduct);
 
             await _context.SaveChangesAsync();
-            return Ok(await _context.Products.ToListAsync());
+            return Ok(await _context.Product.ToListAsync());
         }
 
 
